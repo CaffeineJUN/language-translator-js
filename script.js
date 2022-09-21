@@ -3,6 +3,7 @@ const translateBtn = document.querySelector('button')
 const exchangeIcon = document.querySelector('.exchange')
 const fromText = document.querySelector('.from-text')
 const toText = document.querySelector('.to-text')
+const icons = document.querySelectorAll('.row i')
 
 selectTag.forEach((tag, id) => {
     for (const country_code in countries) {
@@ -36,7 +37,28 @@ translateBtn.addEventListener('click', () => {
     fetch(apiUrl)
         .then(res => res.json())
         .then(data => {
-            console.log(data)
             toText.value = data.responseData.translatedText
         })
+})
+
+icons.forEach(icon => {
+    icon.addEventListener('click', ({target}) => {
+        if (target.classList.contains('fa-copy')) {
+            if (target.id == 'from') {
+                navigator.clipboard.writeText(fromText.value)
+            } else {
+                navigator.clipboard.writeText(toText.value)
+            }
+        } else {
+            let utterance
+            if (target.id == 'from') {
+                utterance = new SpeechSynthesisUtterance(fromText.value)
+                utterance.lang = selectTag[0].value
+            } else {
+                utterance = new SpeechSynthesisUtterance(toText.value)
+                utterance.lang = selectTag[1].value
+            }
+            speechSynthesis.speak(utterance)
+        }
+    })
 })
